@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#8ECAE6">
+  <link rel="manifest" href="manifest.json">
+  <title>한글나라</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- 스플래시 -->
+<div id="splash" class="screen active" style="align-items:center;justify-content:center;gap:12px">
+  <div class="mascot mascot-bounce" style="font-size:100px">🐿️</div>
+  <div class="logo" style="font-size:56px;color:#8ECAE6;font-weight:bold">한글나라</div>
+  <div style="font-size:20px;color:#7A6B5D">다람이와 함께 한글을 배워요!</div>
+</div>
+
+<!-- 홈 -->
+<div id="home" class="screen">
+  <div class="star-counter"><span style="color:#FFD166">⭐</span> <span id="homeStars">0</span></div>
+  <div class="home-mascot">
+    <div class="mascot mascot-wave" style="font-size:80px">🐿️</div>
+    <div class="speech-bubble" id="homeBubble">안녕! 오늘도 같이 공부하자!</div>
+  </div>
+  <div class="logo" style="font-size:42px">한글나라</div>
+  <div class="menu">
+    <button class="btn big blue" onclick="goChapters()">📝 학습하기</button>
+    <button class="btn big orange" onclick="goReview()">🔄 복습하기</button>
+    <button class="btn big purple" onclick="goReward()">⭐ 스티커북</button>
+    <button class="btn big green" onclick="goParentGate()">👨‍👩‍👧 부모님</button>
+  </div>
+</div>
+
+<!-- 챕터 선택 -->
+<div id="chapters" class="screen">
+  <div class="top-bar">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <span class="title">공부할 단계를 골라봐!</span>
+    <div class="mascot-mini">🐿️</div>
+  </div>
+  <div class="scroll-row" id="chapterList"></div>
+</div>
+
+<!-- 레슨 선택 -->
+<div id="lessons" class="screen">
+  <div class="top-bar">
+    <button class="back-btn" onclick="goChapters()">←</button>
+    <span class="title" id="lessonTitle"></span>
+    <div class="mascot-mini">🐿️</div>
+  </div>
+  <div class="lesson-grid" id="lessonList"></div>
+</div>
+
+<!-- 학습 화면 -->
+<div id="learning" class="screen">
+  <div class="top-bar">
+    <button class="back-btn" onclick="exitLearning()">←</button>
+    <span class="title" id="learnTitle"></span>
+    <span class="badge" id="learnStage"></span>
+    <div class="mascot-mini" id="learnMascot">🐿️</div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="learnProgress"></div></div>
+  <div class="content" id="learnContent"></div>
+</div>
+
+<!-- 복습 -->
+<div id="review" class="screen">
+  <div class="top-bar">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <span class="title">복습하기</span>
+  </div>
+  <div id="reviewContent" style="flex:1;padding:24px"></div>
+</div>
+
+<!-- 스티커북 -->
+<div id="reward" class="screen">
+  <div class="top-bar">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <span class="title">스티커북</span>
+    <span class="badge"><span style="color:#FFD166">⭐</span> <span id="rewardStars">0</span></span>
+  </div>
+  <div class="sticker-grid" id="stickerGrid"></div>
+</div>
+
+<!-- 보호자 게이트 -->
+<div id="parentGate" class="screen">
+  <div class="top-bar">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <span class="title">보호자 확인</span>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px">
+    <div style="font-size:20px">보호자만 들어갈 수 있어요</div>
+    <div style="font-size:48px;font-weight:bold" id="gateProblem"></div>
+    <div style="display:flex;gap:16px;align-items:center">
+      <input type="number" class="gate-input" id="gateAnswer" inputmode="numeric">
+      <button class="btn green" onclick="checkGate()">확인</button>
+    </div>
+    <div id="gateError" style="color:#E57373;font-size:16px;display:none">다시 시도해 주세요</div>
+  </div>
+</div>
+
+<!-- 보호자 대시보드 -->
+<div id="parent" class="screen">
+  <div class="top-bar">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <span class="title">학습 현황</span>
+  </div>
+  <div class="parent-content" id="parentContent"></div>
+</div>
+
+<script src="js/content.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/strokes.js"></script>
+<script src="js/canvas.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

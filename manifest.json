@@ -1,0 +1,13 @@
+{
+  "name": "한글나라",
+  "short_name": "한글나라",
+  "description": "재미있게 한글을 배워요!",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#FFF8F0",
+  "theme_color": "#8ECAE6",
+  "icons": [
+    { "src": "icons/icon-192.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
