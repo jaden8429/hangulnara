@@ -1,4 +1,7 @@
 // 한글나라 학습 콘텐츠 데이터
+
+var USER_NAME = '친구';  // 보호자 모드에서 변경 가능
+
 const CHAPTERS = [
   { id:'prep', title:'준비', emoji:'✏️', order:0, unlock:'none',
     lessons:['prep_lines','prep_circles'] },
@@ -77,13 +80,66 @@ const LESSONS = {
   ]},
 };
 
-const PRAISE = {
-  1: ['잘했어!','좋아요!','할 수 있어!','잘 그렸어!'],
-  2: ['멋져요!','잘 썼어!','대단해!','훌륭해!'],
-  3: ['참 잘했어요~','최고야!','완벽해!','천재!','정말 잘했어요~'],
+// 테마별 단어 (stage2 이후 확장)
+var WORD_THEMES = {
+  animals: { title: '\uD83D\uDC3E 동물 친구들', words: [
+    {id:'w_gae', char:'개', name:'개', type:'CHAR', tts:'개'},
+    {id:'w_so', char:'소', name:'소', type:'CHAR', tts:'소'},
+    {id:'w_mal', char:'말', name:'말', type:'CHAR', tts:'말'},
+    {id:'w_sae', char:'새', name:'새', type:'CHAR', tts:'새'},
+    {id:'w_gom', char:'곰', name:'곰', type:'CHAR', tts:'곰'},
+  ]},
+  food: { title: '\uD83C\uDF4E 맛있는 음식', words: [
+    {id:'w_bap', char:'밥', name:'밥', type:'CHAR', tts:'밥'},
+    {id:'w_guk', char:'국', name:'국', type:'CHAR', tts:'국'},
+    {id:'w_tteok', char:'떡', name:'떡', type:'CHAR', tts:'떡'},
+    {id:'w_gam', char:'감', name:'감', type:'CHAR', tts:'감'},
+    {id:'w_kong', char:'콩', name:'콩', type:'CHAR', tts:'콩'},
+  ]},
+  nature: { title: '\uD83C\uDF33 자연 속으로', words: [
+    {id:'w_san', char:'산', name:'산', type:'CHAR', tts:'산'},
+    {id:'w_mul', char:'물', name:'물', type:'CHAR', tts:'물'},
+    {id:'w_kkot', char:'꽃', name:'꽃', type:'CHAR', tts:'꽃'},
+    {id:'w_dal', char:'달', name:'달', type:'CHAR', tts:'달'},
+    {id:'w_byeol', char:'별', name:'별', type:'CHAR', tts:'별'},
+  ]},
+  body: { title: '\u270B 우리 몸', words: [
+    {id:'w_son', char:'손', name:'손', type:'CHAR', tts:'손'},
+    {id:'w_nun', char:'눈', name:'눈', type:'CHAR', tts:'눈'},
+    {id:'w_gwi', char:'귀', name:'귀', type:'CHAR', tts:'귀'},
+    {id:'w_ip', char:'입', name:'입', type:'CHAR', tts:'입'},
+    {id:'w_pal', char:'팔', name:'팔', type:'CHAR', tts:'팔'},
+  ]},
+  family: { title: '\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67 우리 가족', words: [
+    {id:'w_appa', char:'아빠', name:'아빠', type:'CHAR', tts:'아빠'},
+    {id:'w_eomma', char:'엄마', name:'엄마', type:'CHAR', tts:'엄마'},
+    {id:'w_nuna', char:'누나', name:'누나', type:'CHAR', tts:'누나'},
+    {id:'w_hyeong', char:'형', name:'형', type:'CHAR', tts:'형'},
+    {id:'w_dongsaeng', char:'동생', name:'동생', type:'CHAR', tts:'동생'},
+  ]},
+  vehicles: { title: '\uD83D\uDE97 탈것', words: [
+    {id:'w_cha', char:'차', name:'차', type:'CHAR', tts:'차'},
+    {id:'w_bae', char:'배', name:'배', type:'CHAR', tts:'배'},
+    {id:'w_bus', char:'버스', name:'버스', type:'CHAR', tts:'버스'},
+    {id:'w_gicha', char:'기차', name:'기차', type:'CHAR', tts:'기차'},
+    {id:'w_jahajeon', char:'자전거', name:'자전거', type:'CHAR', tts:'자전거'},
+  ]},
 };
-const FAIL_MSG = ['다시 써보자!','괜찮아, 한 번 더!','천천히 써보자!','조금만 더 힘내자!'];
+
 const STICKERS = ['🐻','🐰','🦊','🐱','🐶','🐸','🦁','🐼','🌟','🌈','🎈','🎀','🍎','🍓','🌻','🦋','🚀','💎','🏆','🎨'];
 
-function getPraise(stars) { const a = PRAISE[Math.max(1,Math.min(3,stars))]; return a[Math.random()*a.length|0]; }
-function getFailMsg() { return FAIL_MSG[Math.random()*FAIL_MSG.length|0]; }
+function getPraise(stars) {
+  var n = USER_NAME;
+  var msgs = {
+    1: [n+'아 잘했어!', n+'아 좋아요!', n+'아 할 수 있어!', n+'(이)가 잘 그렸네!'],
+    2: [n+'아 멋져요~', n+'아 잘 썼어!', n+'아 대단해!', '우와 '+n+'아 훌륭해!'],
+    3: [n+'아 참 잘했어~', n+'아 너무 잘한다!', n+'아 최고야!', n+'아 완벽해~!', '우리 '+n+'(이) 천재!'],
+  };
+  var a = msgs[Math.max(1,Math.min(3,stars))];
+  return a[Math.random()*a.length|0];
+}
+function getFailMsg() {
+  var n = USER_NAME;
+  var msgs = [n+'아 다시 써보자!', n+'아 괜찮아, 한 번 더!', n+'아 천천히 써보자!', '괜찮아 '+n+'아, 할 수 있어!'];
+  return msgs[Math.random()*msgs.length|0];
+}

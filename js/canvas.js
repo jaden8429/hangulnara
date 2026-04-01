@@ -7,7 +7,7 @@ class WritingCanvas {
     this.currentStroke = null;
     this.guideText = opts.guideText || null;
     this.guideAlpha = opts.guideAlpha || 0.15;
-    this.penWidth = opts.penWidth || 6;
+    this.penWidth = opts.penWidth || 8;
     this.penColor = opts.penColor || '#333333';
     this.onStrokeEnd = opts.onStrokeEnd || null;
     this.onAutoEvaluate = opts.onAutoEvaluate || null;

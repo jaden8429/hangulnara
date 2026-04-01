@@ -25,6 +25,14 @@ function speak(text) {
 }
 initTTS();
 
+// === 아이 이름 로드 ===
+(function() {
+  var d = loadData();
+  if (d.settings && d.settings.childName) {
+    USER_NAME = d.settings.childName;
+  }
+})();
+
 // === 화면 전환 ===
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
@@ -51,21 +59,36 @@ function showToast(msg, duration) {
 setTimeout(function() {
   showScreen('home');
   document.getElementById('homeStars').textContent = getTotalStars();
+  // 홈 인사말 업데이트
+  var bubble = document.getElementById('homeBubble');
+  if (bubble) bubble.textContent = HOME_GREETINGS[Math.random() * HOME_GREETINGS.length | 0];
 }, 2000);
 
 var HOME_GREETINGS = [
-  '안녕! 오늘도 같이 공부하자!',
-  '다람이가 기다리고 있었어!',
-  '오늘은 뭘 배울까?',
-  '우와, 다시 만나서 반가워!',
-  '같이 한글 쓰러 가자!',
+  USER_NAME+'아 안녕! 오늘도 같이 공부하자!',
+  '다람이가 '+USER_NAME+'(이)를 기다리고 있었어!',
+  USER_NAME+'아 오늘은 뭘 배울까?',
+  '우와, '+USER_NAME+'아 다시 만나서 반가워!',
+  USER_NAME+'아 같이 한글 쓰러 가자!',
 ];
+
+function getHomeGreeting() {
+  var n = USER_NAME;
+  var msgs = [
+    n+'아 안녕! 오늘도 같이 공부하자!',
+    '다람이가 '+n+'(이)를 기다리고 있었어!',
+    n+'아 오늘은 뭘 배울까?',
+    '우와, '+n+'아 다시 만나서 반가워!',
+    n+'아 같이 한글 쓰러 가자!',
+  ];
+  return msgs[Math.random() * msgs.length | 0];
+}
 
 function goHome() {
   showScreen('home');
   document.getElementById('homeStars').textContent = getTotalStars();
   var bubble = document.getElementById('homeBubble');
-  if (bubble) bubble.textContent = HOME_GREETINGS[Math.random() * HOME_GREETINGS.length | 0];
+  if (bubble) bubble.textContent = getHomeGreeting();
 }
 
 // === 챕터 선택 ===
@@ -176,11 +199,11 @@ function renderListen(el, item) {
   el.innerHTML =
     '<div class="learn-row">' +
       '<div class="learn-left">' +
-        '<div class="mascot mascot-wave" style="font-size:min(72px,10vw)">🐿️</div>' +
+        '<div class="mascot mascot-wave" style="font-size:min(56px,8vw)">🐿️</div>' +
         '<div class="speech-bubble">' + mascotMsg + '</div>' +
       '</div>' +
       '<div class="learn-right">' +
-        '<div class="char-display large" style="background:#CBE7F5">' + item.char + '</div>' +
+        '<div class="char-display large float-anim" style="background:#CBE7F5">' + item.char + '</div>' +
         '<div class="learn-name">' + item.name + '</div>' +
         (item.word ? '<div class="learn-word">' + item.char + ' → ' + item.word + '</div>' : '') +
         '<div class="learn-actions">' +
@@ -254,12 +277,11 @@ function renderGuided(el, item) {
   };
 }
 
-// === 캔버스 생성 유틸 (뷰포트 비례) ===
+// === 캔버스 생성 유틸 (뷰포트 비례 — 2x 크게) ===
 function createCanvasHtml() {
-  // 가용 높이: 전체 높이 - 상단바(56) - 프로그레스(8) - 타이틀(40) - 도구(76) - 여백(40)
-  var availH = window.innerHeight - 220;
-  var availW = window.innerWidth - 80;
-  var canvasSize = Math.min(Math.max(280, availH), availW, 560);
+  var availH = window.innerHeight - 160;
+  var availW = window.innerWidth - 48;
+  var canvasSize = Math.min(Math.max(400, availH), availW, 800);
   canvasSize = Math.round(canvasSize);
   return {
     size: canvasSize,
@@ -293,7 +315,7 @@ function renderTrace(el, item) {
   writingCanvas = new WritingCanvas(document.getElementById('writingCanvas'), {
     guideText: item.char,
     guideAlpha: 0.35,
-    penWidth: 5,
+    penWidth: 8,
     autoDelay: 1200,
     onAutoEvaluate: function() { autoEvalTrace(); },
     onStrokeEnd: function() { showAutoIndicator(true); },
@@ -365,7 +387,7 @@ function renderFree(el, item) {
 
   isEvaluating = false;
   writingCanvas = new WritingCanvas(document.getElementById('writingCanvas'), {
-    penWidth: 5,
+    penWidth: 8,
     autoDelay: 1200,
     onAutoEvaluate: function() { autoEvalFree(); },
     onStrokeEnd: function() { showAutoIndicator(true); },
@@ -439,7 +461,7 @@ function renderPraise(el) {
 
   el.innerHTML =
     '<div class="praise-screen">' +
-      '<div class="mascot ' + mascotClass + '" style="font-size:72px">' + mascotEmoji + '</div>' +
+      '<div class="mascot ' + mascotClass + '" style="font-size:88px;animation-delay:0.1s">' + mascotEmoji + '</div>' +
       '<div class="stars">' + starHtml + '</div>' +
       '<div class="praise-text">' + text + '</div>' +
       (stars >= 3 ? '<div class="praise-sub">🐿️ 다람이도 정말 기뻐요~</div>' : stars === 0 ? '<div class="praise-sub">🐿️ 괜찮아, 다음엔 잘할 수 있어!</div>' : '') +
@@ -551,6 +573,39 @@ function startReviewItem(item) {
   showLearningItem();
 }
 
+// === 테마별 학습 ===
+function goThemes() {
+  var el = document.getElementById('reviewContent');
+  var html = '<div style="font-size:22px;font-weight:bold;margin-bottom:16px">🎨 테마별 글자 연습</div>';
+  html += '<div style="display:flex;flex-wrap:wrap;gap:16px">';
+  var colors = ['#CBE7F5','#FFE8A3','#FFD6D6','#D4F3E7','#E8D5FF','#FFDDB0'];
+  var idx = 0;
+  Object.keys(WORD_THEMES).forEach(function(key) {
+    var theme = WORD_THEMES[key];
+    var titleParts = theme.title.split(' ');
+    var emoji = titleParts[0];
+    var label = titleParts.slice(1).join(' ');
+    html += '<div class="theme-card" style="background:' + colors[idx % colors.length] + '" onclick="startTheme(\'' + key + '\')">';
+    html += '<div class="theme-emoji">' + emoji + '</div>';
+    html += '<div class="theme-title">' + label + '</div>';
+    html += '</div>';
+    idx++;
+  });
+  html += '</div>';
+  el.innerHTML = html;
+  showScreen('review');
+}
+
+function startTheme(themeKey) {
+  var theme = WORD_THEMES[themeKey];
+  currentLesson = { _id: '_theme_' + themeKey, items: theme.words, threshold: theme.words.length };
+  currentItems = theme.words;
+  currentItemIndex = 0;
+  currentChapterId = null;
+  lessonStickerAwarded = true;
+  showLearningItem();
+}
+
 // === 스티커북 ===
 function goReward() {
   document.getElementById('rewardStars').textContent = getTotalStars();
@@ -626,9 +681,31 @@ function showParentDashboard() {
     cpArea.appendChild(row);
   });
 
-  // 설정 토글
+  // 설정
   var sa = document.getElementById('settingsArea');
   var d = loadData();
+
+  // 이름 설정
+  var nameRow = document.createElement('div');
+  nameRow.className = 'setting-row';
+  nameRow.innerHTML = '<label>아이 이름</label>';
+  var nameInput = document.createElement('input');
+  nameInput.type = 'text';
+  nameInput.className = 'name-input';
+  nameInput.value = USER_NAME;
+  nameInput.placeholder = '이름 입력';
+  nameInput.style.cssText = 'font-size:18px;width:140px;padding:8px 12px;border:2px solid #8ECAE6;border-radius:12px;outline:none;';
+  nameInput.onchange = function() {
+    USER_NAME = nameInput.value.trim() || '친구';
+    var data = loadData();
+    data.settings.childName = USER_NAME;
+    saveData(data);
+    showToast(USER_NAME + ' (으)로 설정했어요!', 1500);
+  };
+  nameRow.appendChild(nameInput);
+  sa.appendChild(nameRow);
+
+  // 토글 설정
   function makeToggle(label, key, value) {
     var row = document.createElement('div');
     row.className = 'setting-row';
