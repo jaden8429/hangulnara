@@ -18,8 +18,22 @@ function speak(text) {
   tts.cancel();
   var u = new SpeechSynthesisUtterance(text);
   u.lang = 'ko-KR';
-  u.rate = 0.9;    // 약간 느리지만 자연스럽게
-  u.pitch = 1.35;  // 밝고 경쾌한 톤 (아이 친화적)
+  u.rate = 0.9;
+  u.pitch = 1.35;
+  u.volume = 1.0;
+  tts.speak(u);
+}
+
+// 다람이 목소리 (더 높고 귀여운 톤)
+function speakDarami(text) {
+  if (!tts) return;
+  var d = loadData();
+  if (!d.settings.tts) return;
+  tts.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  u.lang = 'ko-KR';
+  u.rate = 0.85;   // 조금 더 천천히
+  u.pitch = 1.6;   // 높고 귀여운 톤
   u.volume = 1.0;
   tts.speak(u);
 }
@@ -59,9 +73,11 @@ function showToast(msg, duration) {
 setTimeout(function() {
   showScreen('home');
   document.getElementById('homeStars').textContent = getTotalStars();
-  // 홈 인사말 업데이트
+  var greeting = getHomeGreeting();
   var bubble = document.getElementById('homeBubble');
-  if (bubble) bubble.textContent = getHomeGreeting();
+  if (bubble) bubble.textContent = greeting;
+  // 다람이가 귀여운 목소리로 인사!
+  setTimeout(function() { speakDarami(greeting); }, 300);
 }, 2000);
 
 var HOME_GREETINGS = [
@@ -72,14 +88,17 @@ var HOME_GREETINGS = [
   USER_NAME+'아 같이 한글 쓰러 가자!',
 ];
 
+// 다람이 캐릭터 인사말 (귀여운 말투)
 function getHomeGreeting() {
   var n = USER_NAME;
   var msgs = [
-    n+'아 안녕! 오늘도 같이 공부하자!',
-    '다람이가 '+n+'(이)를 기다리고 있었어!',
-    n+'아 오늘은 뭘 배울까?',
-    '우와, '+n+'아 다시 만나서 반가워!',
-    n+'아 같이 한글 쓰러 가자!',
+    n+'아 안녕~! 다람이랑 오늘도 재밌게 공부하쟈!',
+    '앗! '+n+'(이)다~! 다람이가 엄청 기다렸어!',
+    n+'아~! 오늘은 뭘 배워볼까? 두근두근!',
+    '우와앙~ '+n+'아 왔구나! 다람이 너무 반가워!',
+    n+'아~ 같이 한글 쓰러 가자! 슝~!',
+    '야호~! '+n+'아 안녕! 오늘도 파이팅이다!',
+    n+'아~ 다람이가 도토리 가져왔어! 같이 공부하쟈~!',
   ];
   return msgs[Math.random() * msgs.length | 0];
 }
@@ -87,8 +106,10 @@ function getHomeGreeting() {
 function goHome() {
   showScreen('home');
   document.getElementById('homeStars').textContent = getTotalStars();
+  var greeting = getHomeGreeting();
   var bubble = document.getElementById('homeBubble');
-  if (bubble) bubble.textContent = getHomeGreeting();
+  if (bubble) bubble.textContent = greeting;
+  speakDarami(greeting);
 }
 
 // === 챕터 선택 ===
@@ -191,7 +212,13 @@ function speakItem() {
   if (item) speak(item.tts);
 }
 
-var LISTEN_MSGS = ['이건 뭘까?', '잘 들어봐!', '소리를 들어보자!', '이 글자를 배워보자!'];
+var LISTEN_MSGS = [
+  '이건 뭘까~? 다람이가 알려줄게!',
+  '잘 들어봐~! 따라해 보쟈!',
+  '귀 쫑긋! 소리를 들어보쟈~!',
+  '우와~ 이 글자를 배워볼까?',
+  '짜잔~! 새로운 글자다!',
+];
 
 // === LISTEN 단계: 소리 듣기 (큰 글자 + 마스코트) ===
 function renderListen(el, item) {
@@ -214,7 +241,9 @@ function renderListen(el, item) {
     '</div>';
   document.getElementById('speakBtn').onclick = speakItem;
   document.getElementById('listenNextBtn').onclick = function() { currentStage = 'GUIDED'; renderStage(); };
-  speak(item.tts);
+  // 다람이 멘트 → 글자 발음 순서로
+  speakDarami(mascotMsg);
+  setTimeout(function() { speak(item.tts); }, 2000);
 }
 
 // === GUIDED 단계: 획순 애니메이션 ===
@@ -464,14 +493,15 @@ function renderPraise(el) {
       '<div class="mascot ' + mascotClass + '" style="font-size:88px;animation-delay:0.1s">' + mascotEmoji + '</div>' +
       '<div class="stars">' + starHtml + '</div>' +
       '<div class="praise-text">' + text + '</div>' +
-      (stars >= 3 ? '<div class="praise-sub">🐿️ 다람이도 정말 기뻐요~</div>' : stars === 0 ? '<div class="praise-sub">🐿️ 괜찮아, 다음엔 잘할 수 있어!</div>' : '') +
+      (stars >= 3 ? '<div class="praise-sub">🐿️ 다람이가 너무 기뻐서 춤출 것 같아~!</div>' : stars === 0 ? '<div class="praise-sub">🐿️ 괜찮아~ 다람이가 응원할게!</div>' : '') +
       '<button class="btn green big" id="praiseNextBtn" style="margin-top:24px">다음 →</button>' +
     '</div>';
   document.getElementById('praiseNextBtn').onclick = nextItem;
 
   if (stars >= 3) { showConfetti(); showStarBurst(); }
   else if (stars >= 2) { showStarBurst(); }
-  if (stars > 0) speak(text);
+  // 다람이 목소리로 칭찬!
+  speakDarami(text);
 
   if (!lessonStickerAwarded) {
     var passed = getPassedCount(currentLesson._id);
